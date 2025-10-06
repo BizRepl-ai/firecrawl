@@ -62,12 +62,12 @@ services:
     networks:
       - backend
     # ---- RESOURCE LIMITS (non-Swarm) ----
-    cpus: 1.0              # hard cap ≈ 1 core
-    mem_limit: 1.5g        # hard cap
-    mem_reservation: 768m  # soft floor; helps the OOM killer avoid you
-    cpu_shares: 512        # relative weight vs other containers
-    shm_size: "512m"       # Chromium needs bigger /dev/shm to avoid crashes
-    pids_limit: 512        # sanity cap on processes/threads
+    cpus: 1.0
+    mem_limit: 1.5g
+    mem_reservation: 768m
+    cpu_shares: 512
+    shm_size: "512m"
+    pids_limit: 512
 
   api:
     <<: *common-service
@@ -77,10 +77,10 @@ services:
       PORT: ${INTERNAL_PORT:-3002}
       EXTRACT_WORKER_PORT: ${EXTRACT_WORKER_PORT:-3004}
       WORKER_PORT: ${WORKER_PORT:-3005}
-      NUM_WORKERS_PER_QUEUE: ${NUM_WORKERS_PER_QUEUE:-2}
+      NUM_WORKERS_PER_QUEUE: ${NUM_WORKERS_PER_QUEUE:-1}   # ↓ start safer
       ENV: local
       # Keep Node heap below the container RAM cap (set ~75–80% of mem_limit)
-      NODE_OPTIONS: "--max-old-space-size=1536"
+      NODE_OPTIONS: "--max-old-space-size=1024"            # ~1 GB heap
     depends_on:
       - redis
       - playwright-service
@@ -89,10 +89,16 @@ services:
     command: node dist/src/harness.js --start-docker
     # ---- RESOURCE LIMITS (non-Swarm) ----
     cpus: 1.5
-    mem_limit: 2g
-    mem_reservation: 1g
+    mem_limit: 3g                  # ↑ more headroom for multi-proc
+    mem_reservation: 1.5g
     cpu_shares: 768
     pids_limit: 1024
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3002/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
 
   redis:
     # NOTE: If you want to use Valkey (open source) instead of Redis (source available),
