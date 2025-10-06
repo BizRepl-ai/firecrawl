@@ -68,6 +68,7 @@ services:
       PORT: ${INTERNAL_PORT:-3002}
       EXTRACT_WORKER_PORT: ${EXTRACT_WORKER_PORT:-3004}
       WORKER_PORT: ${WORKER_PORT:-3005}
+      NUM_WORKERS_PER_QUEUE: ${NUM_WORKERS_PER_QUEUE:-2}
       ENV: local
     depends_on:
       - redis
