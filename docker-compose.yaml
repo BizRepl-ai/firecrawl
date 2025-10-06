@@ -57,8 +57,17 @@ services:
       PROXY_USERNAME: ${PROXY_USERNAME}
       PROXY_PASSWORD: ${PROXY_PASSWORD}
       BLOCK_MEDIA: ${BLOCK_MEDIA}
+      # Keep Chromium inside the RAM cap (adjust if you change mem_limit)
+      NODE_OPTIONS: "--max-old-space-size=768"
     networks:
       - backend
+    # ---- RESOURCE LIMITS (non-Swarm) ----
+    cpus: 1.0              # hard cap ≈ 1 core
+    mem_limit: 1.5g        # hard cap
+    mem_reservation: 768m  # soft floor; helps the OOM killer avoid you
+    cpu_shares: 512        # relative weight vs other containers
+    shm_size: "512m"       # Chromium needs bigger /dev/shm to avoid crashes
+    pids_limit: 512        # sanity cap on processes/threads
 
   api:
     <<: *common-service
@@ -70,12 +79,20 @@ services:
       WORKER_PORT: ${WORKER_PORT:-3005}
       NUM_WORKERS_PER_QUEUE: ${NUM_WORKERS_PER_QUEUE:-2}
       ENV: local
+      # Keep Node heap below the container RAM cap (set ~75–80% of mem_limit)
+      NODE_OPTIONS: "--max-old-space-size=1536"
     depends_on:
       - redis
       - playwright-service
     ports:
       - "${PORT:-3002}:${INTERNAL_PORT:-3002}"
     command: node dist/src/harness.js --start-docker
+    # ---- RESOURCE LIMITS (non-Swarm) ----
+    cpus: 1.5
+    mem_limit: 2g
+    mem_reservation: 1g
+    cpu_shares: 768
+    pids_limit: 1024
 
   redis:
     # NOTE: If you want to use Valkey (open source) instead of Redis (source available),
