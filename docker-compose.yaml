@@ -65,14 +65,14 @@ services:
       MAX_CONCURRENT_PAGES: ${CRAWL_CONCURRENT_REQUESTS:-10}
     networks:
       - backend
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 4G
-        reservations:
-          cpus: '1.0'
-          memory: 2G
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '2.0'
+    #       memory: 4G
+    #     reservations:
+    #       cpus: '1.0'
+    #       memory: 2G
 
   api:
     <<: *common-service
@@ -90,14 +90,14 @@ services:
     ports:
       - "${PORT:-3002}:${INTERNAL_PORT:-3002}"
     command: node dist/src/harness.js --start-docker
-    deploy:
-      resources:
-        limits:
-          cpus: '4.0'      # Increase if you have more CPU cores
-          memory: 8G       # Increase if you have more RAM
-        reservations:
-          cpus: '2.0'      # Minimum guaranteed CPU
-          memory: 4G       # Minimum guaranteed RAM
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '4.0'      # Increase if you have more CPU cores
+    #       memory: 8G       # Increase if you have more RAM
+    #     reservations:
+    #       cpus: '2.0'      # Minimum guaranteed CPU
+    #       memory: 4G       # Minimum guaranteed RAM
 
   redis:
     # NOTE: If you want to use Valkey (open source) instead of Redis (source available),
