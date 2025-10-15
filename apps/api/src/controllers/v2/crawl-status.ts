@@ -349,11 +349,18 @@ export async function crawlStatusController(
   };
 
   if (sc || process.env.USE_DB_AUTHENTICATION !== "true" || isPreviewTeam) {
+    const offset =
+      typeof req.query.skip === 'string' ? Math.max(0, parseInt(req.query.skip, 10)) : 0;
+
+    const take =
+      typeof req.query.limit === 'string' ? Math.max(1, parseInt(req.query.limit, 10)) : 100;
+
+    // Local/Redis path:
     const doneJobs = await getDoneJobsOrderedUntil(
       req.params.jobId,
       djoCutoff,
-      start,
-      end !== undefined ? end - start : 100,
+      offset,
+      take, // ✅ pass the real count to take
     );
 
     let scrapes: Document[] = [];
@@ -414,8 +421,8 @@ export async function crawlStatusController(
     const { data, error } = await supabase_service.rpc(
       "crawl_status_1",
       {
-        i_team_id: req.auth.team_id,
-        i_crawl_id: req.params.jobId,
+      i_team_id: req.auth.team_id,
+      i_crawl_id: req.params.jobId,
         i_start: start,
         i_end: end ?? start + 100,
       },
