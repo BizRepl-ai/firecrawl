@@ -178,6 +178,7 @@ interface UrlModel {
   headers?: { [key: string]: string };
   check_selector?: string;
   skip_tls_verification?: boolean;
+  use_proxy?: boolean;
 }
 
 let browser: Browser;
@@ -197,7 +198,7 @@ const initializeBrowser = async () => {
   });
 };
 
-const createContext = async (skipTlsVerification: boolean = false): Promise<{ context: BrowserContext; securityState: ContextSecurityState }> => {
+const createContext = async (skipTlsVerification: boolean = false, useProxy: boolean = true): Promise<{ context: BrowserContext; securityState: ContextSecurityState }> => {
   const userAgent = new UserAgent().toString();
   const viewport = { width: 1280, height: 800 };
   const securityState: ContextSecurityState = {
@@ -211,16 +212,18 @@ const createContext = async (skipTlsVerification: boolean = false): Promise<{ co
     serviceWorkers: 'block',
   };
 
-  if (PROXY_SERVER && PROXY_USERNAME && PROXY_PASSWORD) {
-    contextOptions.proxy = {
-      server: PROXY_SERVER,
-      username: PROXY_USERNAME,
-      password: PROXY_PASSWORD,
-    };
-  } else if (PROXY_SERVER) {
-    contextOptions.proxy = {
-      server: PROXY_SERVER,
-    };
+  if (useProxy) {
+    if (PROXY_SERVER && PROXY_USERNAME && PROXY_PASSWORD) {
+      contextOptions.proxy = {
+        server: PROXY_SERVER,
+        username: PROXY_USERNAME,
+        password: PROXY_PASSWORD,
+      };
+    } else if (PROXY_SERVER) {
+      contextOptions.proxy = {
+        server: PROXY_SERVER,
+      };
+    }
   }
 
   const newContext = await browser.newContext(contextOptions);
@@ -354,7 +357,7 @@ app.get('/health', async (req: Request, res: Response) => {
 });
 
 app.post('/scrape', async (req: Request, res: Response) => {
-  const { url, wait_after_load = 0, timeout = 15000, headers, check_selector, skip_tls_verification = false }: UrlModel = req.body;
+  const { url, wait_after_load = 0, timeout = 15000, headers, check_selector, skip_tls_verification = false, use_proxy = true }: UrlModel = req.body;
 
   console.log(`================= Scrape Request =================`);
   console.log(`URL: ${url}`);
@@ -363,6 +366,7 @@ app.post('/scrape', async (req: Request, res: Response) => {
   console.log(`Headers: ${headers ? JSON.stringify(headers) : 'None'}`);
   console.log(`Check Selector: ${check_selector ? check_selector : 'None'}`);
   console.log(`Skip TLS Verification: ${skip_tls_verification}`);
+  console.log(`Use Proxy: ${use_proxy}`);
   console.log(`==================================================`);
 
   if (!url) {
@@ -401,7 +405,7 @@ app.post('/scrape', async (req: Request, res: Response) => {
   let page: Page | null = null;
 
   try {
-    const contextBundle = await createContext(skip_tls_verification);
+    const contextBundle = await createContext(skip_tls_verification, use_proxy);
     requestContext = contextBundle.context;
     securityState = contextBundle.securityState;
     page = await requestContext.newPage();

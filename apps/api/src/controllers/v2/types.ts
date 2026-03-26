@@ -569,7 +569,7 @@ const baseScrapeOptions = z.strictObject({
   fastMode: z.boolean().prefault(false),
   useMock: z.string().optional(),
   blockAds: z.boolean().prefault(true),
-  proxy: z.enum(["basic", "stealth", "enhanced", "auto"]).prefault("auto"),
+  proxy: z.enum(["none", "basic", "stealth", "enhanced", "auto"]).prefault("auto"),
   maxAge: z.int().gte(0).optional(),
   minAge: z.int().gte(0).optional(),
   storeInCache: z.boolean().prefault(true),
@@ -1093,7 +1093,7 @@ export type Document = {
     numPages?: number;
     contentType?: string;
     timezone?: string;
-    proxyUsed: "basic" | "stealth";
+    proxyUsed: "none" | "basic" | "stealth";
     cacheState?: "hit" | "miss";
     cachedAt?: string;
     creditsUsed?: number;

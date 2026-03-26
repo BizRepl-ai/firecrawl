@@ -106,7 +106,7 @@ export type Meta = {
         filePath: string;
         url?: string;
         status: number;
-        proxyUsed: "basic" | "stealth";
+        proxyUsed: "none" | "basic" | "stealth";
         contentType?: string;
       }
     | null
@@ -116,7 +116,7 @@ export type Meta = {
         filePath: string;
         url?: string;
         status: number;
-        proxyUsed: "basic" | "stealth";
+        proxyUsed: "none" | "basic" | "stealth";
         contentType?: string;
       }
     | null

@@ -19,6 +19,7 @@ export async function scrapeURLWithPlaywright(
       timeout: meta.abort.scrapeTimeout(),
       headers: meta.options.headers,
       skip_tls_verification: meta.options.skipTlsVerification,
+      use_proxy: meta.options.proxy !== "none",
     },
     method: "POST",
     logger: meta.logger.child("scrapeURLWithPlaywright/robustFetch"),
@@ -43,7 +44,7 @@ export async function scrapeURLWithPlaywright(
     error: response.pageError,
     contentType: response.contentType,
 
-    proxyUsed: "basic",
+    proxyUsed: meta.options.proxy === "none" ? "none" : "basic",
   };
 }
 

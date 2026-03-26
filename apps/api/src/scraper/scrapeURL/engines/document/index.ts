@@ -93,7 +93,7 @@ function isValidDocumentContentType(contentType: string | null): boolean {
 export async function scrapeDocument(meta: Meta): Promise<EngineScrapeResult> {
   let response: Response;
   let buffer: Buffer;
-  let proxyUsed: "basic" | "stealth" = "basic";
+  let proxyUsed: "none" | "basic" | "stealth" = "basic";
   let tempFilePath: string | null = null;
 
   try {

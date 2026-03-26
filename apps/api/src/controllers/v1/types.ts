@@ -1059,7 +1059,7 @@ export type Document = {
     numPages?: number;
     contentType?: string;
     timezone?: string;
-    proxyUsed: "basic" | "stealth";
+    proxyUsed: "none" | "basic" | "stealth";
     cacheState?: "hit" | "miss";
     cachedAt?: string;
     creditsUsed?: number;

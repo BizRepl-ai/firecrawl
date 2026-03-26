@@ -144,7 +144,7 @@ export type EngineScrapeResult = {
   youtubeTranscriptContent?: any;
   postprocessorsUsed?: string[];
 
-  proxyUsed: "basic" | "stealth";
+  proxyUsed: "none" | "basic" | "stealth";
   timezone?: string;
 };
 

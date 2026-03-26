@@ -52,7 +52,7 @@ export async function scrapeURLWithFetch(
   } else {
     try {
       const x = await undici.fetch(meta.rewrittenUrl ?? meta.url, {
-        dispatcher: getSecureDispatcher(meta.options.skipTlsVerification),
+        dispatcher: getSecureDispatcher(meta.options.skipTlsVerification, meta.options.proxy !== "none"),
         redirect: "follow",
         headers: meta.options.headers,
         signal: meta.abort.asSignal(),
@@ -116,7 +116,7 @@ export async function scrapeURLWithFetch(
       (response.headers.find(x => x[0].toLowerCase() === "content-type") ??
         [])[1] ?? undefined,
 
-    proxyUsed: "basic",
+    proxyUsed: meta.options.proxy === "none" ? "none" : "basic",
   };
 }
 
