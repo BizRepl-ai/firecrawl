@@ -116,6 +116,8 @@ export async function crawlController(
     originalBodyLimit: preNormalizedBody.limit,
   });
 
+  logger.info(`[PROXY-DEBUG] bodyScrapeOptions.proxy=${bodyScrapeOptions?.proxy}, parsed scrapeOptions.proxy=${scrapeOptions?.proxy}`);
+
   const sc: StoredCrawl = {
     originUrl: req.body.url,
     crawlerOptions: toLegacyCrawlerOptions(crawlerOptions),

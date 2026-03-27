@@ -51,6 +51,7 @@ export async function scrapeURLWithFetch(
     };
   } else {
     try {
+      meta.logger.info(`[PROXY-DEBUG] fetch engine: proxy=${meta.options.proxy}, useProxy=${meta.options.proxy !== "none"}`);
       const x = await undici.fetch(meta.rewrittenUrl ?? meta.url, {
         dispatcher: getSecureDispatcher(meta.options.skipTlsVerification, meta.options.proxy !== "none"),
         redirect: "follow",

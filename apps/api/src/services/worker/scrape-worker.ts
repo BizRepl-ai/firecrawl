@@ -204,6 +204,7 @@ async function processJob(job: NuQJob<ScrapeJobSingleUrls>) {
   });
   applyZdrScope(job.data?.zeroDataRetention);
   logger.info(`🐂 Worker taking job ${job.id}`, { url: job.data.url });
+  logger.info(`[PROXY-DEBUG] scrapeOptions.proxy=${job.data.scrapeOptions?.proxy}`);
   const start = job.data.startTime ?? Date.now();
   const remainingTime = job.data.scrapeOptions.timeout
     ? job.data.scrapeOptions.timeout - (Date.now() - start)
