@@ -569,7 +569,7 @@ const baseScrapeOptions = z.strictObject({
   fastMode: z.boolean().prefault(false),
   useMock: z.string().optional(),
   blockAds: z.boolean().prefault(true),
-  proxy: z.enum(["none", "basic", "stealth", "enhanced", "auto"]).prefault("auto"),
+  proxy: z.enum(["none", "basic", "stealth", "enhanced", "auto"]).prefault("none"),
   maxAge: z.int().gte(0).optional(),
   minAge: z.int().gte(0).optional(),
   storeInCache: z.boolean().prefault(true),
